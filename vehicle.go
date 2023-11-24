@@ -9,4 +9,5 @@ type Vehicle struct {
 	Model        string
 	ParkingSpot  string
 	ParkingTime  time.Time
+	Handicapped  bool
 }

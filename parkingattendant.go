@@ -14,8 +14,12 @@ func NewParkingAttendant() *ParkingAttendant {
 }
 
 // AssignSpot assigns a parking spot to a vehicle gradually, filling all parking lots evenly in a round-robin fashion.
-
 func (pa *ParkingAttendant) AssignSpot(parkingLots []*ParkingLot, parkingSpotLists [][][]ParkingSpot, vehicle *Vehicle) (string, error) {
+	// Check if the vehicle is handicapped
+	if vehicle.Handicapped {
+		return pa.assignHandicappedSpot(parkingLots, parkingSpotLists, vehicle)
+	}
+
 	// Iterate over parking spots in a round-robin fashion
 	for i := 0; i < len(parkingSpotLists[0]); i++ {
 		// Iterate over parking lots in a round-robin fashion
@@ -34,6 +38,48 @@ func (pa *ParkingAttendant) AssignSpot(parkingLots []*ParkingLot, parkingSpotLis
 	}
 
 	return "", fmt.Errorf("parking lots are full")
+}
+
+func (pa *ParkingAttendant) assignHandicappedSpot(parkingLots []*ParkingLot, parkingSpotLists [][][]ParkingSpot, vehicle *Vehicle) (string, error) {
+	// Iterate over parking lots and find the nearest available spot
+	for _, lot := range parkingLots {
+		for i := 0; i < len(parkingSpotLists[0]); i++ {
+			if !parkingSpotLists[lot.ID-1][i][0].Occupied {
+				// Convert row and column indices to parking spot identifier (e.g., a1, b2, etc.)
+				parkingSpot := string(rune('a'+i)) + fmt.Sprintf("%d", lot.ID)
+				parkingSpotLists[lot.ID-1][i][0].Occupied = true
+				vehicle.ParkingSpot = parkingSpot
+				lot.ParkedVehicles = append(lot.ParkedVehicles, *vehicle)
+				lot.AvailableSpaces--
+				return parkingSpot, nil
+			}
+		}
+	}
+
+	return "", fmt.Errorf("handicapped parking is full")
+}
+
+func findNearestParkingLot(parkingLots []*ParkingLot) int {
+	// Implement the logic to find the nearest parking lot (e.g., based on distance or any other criteria)
+	// For simplicity, let's assume the first parking lot is the nearest in this example
+	return 0
+}
+
+// Helper function to assign a spot in a specific parking lot
+func assignSpotInLot(lotIndex int, parkingSpotLists [][][]ParkingSpot, vehicle *Vehicle) (string, error) {
+	// Iterate over parking spots in the chosen parking lot
+	for i := 0; i < len(parkingSpotLists[0]); i++ {
+		// Find the next available spot in the current parking lot
+		if !parkingSpotLists[lotIndex][i][0].Occupied {
+			// Convert row and column indices to parking spot identifier (e.g., a1, b2, etc.)
+			parkingSpot := string(rune('a'+i)) + fmt.Sprintf("%d", lotIndex+1)
+			parkingSpotLists[lotIndex][i][0].Occupied = true
+			vehicle.ParkingSpot = parkingSpot
+			return parkingSpot, nil
+		}
+	}
+
+	return "", fmt.Errorf("parking lot %d is full", lotIndex+1)
 }
 
 // getRandomAvailableSpot returns an available parking spot randomly in the given parking lot.

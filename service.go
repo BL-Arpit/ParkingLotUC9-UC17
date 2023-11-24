@@ -10,6 +10,7 @@ type ParkingService struct {
 	parkingLots   []*ParkingLot
 	attendant     *ParkingAttendant
 	securityStaff *SecurityStaff
+	parkingSpots  []string
 }
 
 // NewParkingService creates a new parking service with the given parking lots, attendant, and security staff.

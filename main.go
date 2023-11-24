@@ -53,6 +53,8 @@ func main() {
 			fmt.Scan(&vehicle.Color)
 			fmt.Print("Enter Model: ")
 			fmt.Scan(&vehicle.Model)
+			fmt.Print("Is the driver handicapped? (true/false): ")
+			fmt.Scan(&vehicle.Handicapped)
 
 			err := parkingService.Park(vehicle, parkingSpotLists)
 			if err != nil {
