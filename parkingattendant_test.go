@@ -9,6 +9,7 @@ func TestParkingAttendant(t *testing.T) {
 	columns := 6
 
 	// Create parking lots
+	//4 lots
 	parkingLots := make([]*ParkingLot, 4)
 	parkingSpotLists := make([][][]ParkingSpot, 4)
 
