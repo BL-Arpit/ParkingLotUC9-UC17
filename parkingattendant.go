@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"strings"
 )
 
 // ParkingAttendant represents the attendant responsible for assigning parking spots.
@@ -18,21 +19,49 @@ func (pa *ParkingAttendant) AssignSpot(parkingLots []*ParkingLot, parkingSpotLis
 	// Check if the vehicle is handicapped
 	if vehicle.Handicapped {
 		return pa.assignHandicappedSpot(parkingLots, parkingSpotLists, vehicle)
-	}
+	} else if strings.ToLower(vehicle.Model) == "suv" {
+		// If the vehicle is an SUV, find the parking lot with the highest available space
+		highestAvailableLotIndex := -1
+		highestAvailableSpace := 0
 
-	// Iterate over parking spots in a round-robin fashion
-	for i := 0; i < len(parkingSpotLists[0]); i++ {
-		// Iterate over parking lots in a round-robin fashion
-		for j := 0; j < len(parkingLots); j++ {
-			// Find the next available spot in the current parking lot
-			if !parkingSpotLists[j][i][0].Occupied {
-				// Convert row and column indices to parking spot identifier (e.g., a1, b2, etc.)
-				parkingSpot := string(rune('a'+i)) + fmt.Sprintf("%d", j+1)
-				parkingSpotLists[j][i][0].Occupied = true
+		for i, lot := range parkingLots {
+			if lot.AvailableSpaces > highestAvailableSpace {
+				highestAvailableLotIndex = i
+				highestAvailableSpace = lot.AvailableSpaces
+			}
+		}
+
+		if highestAvailableLotIndex == -1 {
+			return "", fmt.Errorf("all parking lots are full")
+		}
+
+		// Assign a parking spot in the parking lot with the highest available space
+		for i := 0; i < len(parkingSpotLists[highestAvailableLotIndex]); i++ {
+			if !parkingSpotLists[highestAvailableLotIndex][i][0].Occupied {
+				parkingSpot := string(rune('a'+i)) + fmt.Sprintf("%d", highestAvailableLotIndex+1)
+				parkingSpotLists[highestAvailableLotIndex][i][0].Occupied = true
 				vehicle.ParkingSpot = parkingSpot
-				parkingLots[j].ParkedVehicles = append(parkingLots[j].ParkedVehicles, *vehicle)
-				parkingLots[j].AvailableSpaces--
+				parkingLots[highestAvailableLotIndex].ParkedVehicles = append(parkingLots[highestAvailableLotIndex].ParkedVehicles, *vehicle)
+				parkingLots[highestAvailableLotIndex].AvailableSpaces--
 				return parkingSpot, nil
+			}
+		}
+	} else {
+
+		// Iterate over parking spots in a round-robin fashion
+		for i := 0; i < len(parkingSpotLists[0]); i++ {
+			// Iterate over parking lots in a round-robin fashion
+			for j := 0; j < len(parkingLots); j++ {
+				// Find the next available spot in the current parking lot
+				if !parkingSpotLists[j][i][0].Occupied {
+					// Convert row and column indices to parking spot identifier (e.g., a1, b2, etc.)
+					parkingSpot := string(rune('a'+i)) + fmt.Sprintf("%d", j+1)
+					parkingSpotLists[j][i][0].Occupied = true
+					vehicle.ParkingSpot = parkingSpot
+					parkingLots[j].ParkedVehicles = append(parkingLots[j].ParkedVehicles, *vehicle)
+					parkingLots[j].AvailableSpaces--
+					return parkingSpot, nil
+				}
 			}
 		}
 	}

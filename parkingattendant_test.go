@@ -114,3 +114,82 @@ func TestParkingAttendant_HandicappedParking(t *testing.T) {
 		fmt.Println()
 	}
 }
+func TestAssignSpotForSUV(t *testing.T) {
+	rows := 6
+	columns := 6
+
+	// Create parking lots
+	parkingLot1 := NewParkingLot(1, rows, columns)
+	parkingLot2 := NewParkingLot(2, rows, columns)
+	parkingLot3 := NewParkingLot(3, rows, columns)
+	parkingLot4 := NewParkingLot(4, rows, columns)
+
+	parkingLots := []*ParkingLot{parkingLot1, parkingLot2, parkingLot3, parkingLot4}
+
+	attendant := NewParkingAttendant()
+	securityStaff := &SecurityStaff{}
+	parkingService := NewParkingService(parkingLots, attendant, securityStaff)
+
+	parkingSpotLists := make([][][]ParkingSpot, len(parkingLots))
+
+	for i := range parkingSpotLists {
+		parkingSpotLists[i] = make([][]ParkingSpot, rows)
+		for j := range parkingSpotLists[i] {
+			parkingSpotLists[i][j] = make([]ParkingSpot, columns)
+		}
+	}
+
+	// Park 9 normal vehicles
+	for j := 0; j < 9; j++ {
+		vehicle := Vehicle{
+			LicensePlate: fmt.Sprintf("ABC%d", j+1),
+			Color:        "Red",
+			Model:        "Sedan",
+		}
+
+		err := parkingService.Park(vehicle, parkingSpotLists)
+		if err != nil {
+			t.Fatalf("Error parking vehicle: %v", err)
+		}
+	}
+
+	// Park 3 SUVs and check if they are parked in the lot with the highest available space
+	for j := 0; j < 2; j++ {
+		suvVehicle := Vehicle{
+			LicensePlate: fmt.Sprintf("SUV%d", j+1),
+			Color:        "Black",
+			Model:        "SUV",
+		}
+
+		err := parkingService.Park(suvVehicle, parkingSpotLists)
+		if err != nil {
+			t.Fatalf("Error parking SUV: %v", err)
+		}
+
+		// Print the parking status after parking each SUV
+		parkingService.Status()
+	}
+	//unpark from parking lot 1
+	for i := 0; i < 3; i++ {
+		err := parkingService.Unpark(fmt.Sprintf("ABC%d", i+1), parkingSpotLists)
+		if err != nil {
+			t.Fatalf("Error unparking vehicle: %v", err)
+		}
+	}
+
+	for j := 0; j < 2; j++ {
+		suvVehicle := Vehicle{
+			LicensePlate: fmt.Sprintf("SUV%d", j+1),
+			Color:        "Black",
+			Model:        "SUV",
+		}
+
+		err := parkingService.Park(suvVehicle, parkingSpotLists)
+		if err != nil {
+			t.Fatalf("Error parking SUV: %v", err)
+		}
+
+		// Print the parking status after parking each SUV
+		parkingService.Status()
+	}
+}
