@@ -67,3 +67,17 @@ func (pd *PoliceDepartment) CheckForBMW() {
 		fmt.Println("\nNo BMW Cars found. No change in security.")
 	}
 }
+
+func (pd *PoliceDepartment) DisplayRecentCars() {
+	recentCars := pd.parkingService.FindCarsParkedLast30Mins()
+
+	if len(recentCars) > 0 {
+		fmt.Println("Cars parked in the last 30 minutes:")
+		for _, car := range recentCars {
+			fmt.Printf("License Plate: %s, Color: %s, Model: %s, Parking Spot: %s\n",
+				car.LicensePlate, car.Color, car.Model, car.ParkingSpot)
+		}
+	} else {
+		fmt.Println("No cars found that were parked in the last 30 minutes.")
+	}
+}

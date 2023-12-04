@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"testing"
+	"time"
 )
 
 func TestPoliceDepartment_FindWhiteCars(t *testing.T) {
@@ -133,7 +134,7 @@ func TestPoliceDepartment_CheckForBMW(t *testing.T) {
 	assert.NoError(t, err, "Error assigning parking spot for BMW car")
 
 	// Capture standard output and check printed messages
-	expectedOutput := "\nBMW Cars found. Security tightened.\n"
+	expectedOutput := "Security staff notified: High-security measures activated.\n\nBMW Cars found. Security tightened.\n"
 	actualOutput := captureOutput(func() {
 		policeDepartment.CheckForBMW()
 	})
@@ -154,4 +155,85 @@ func captureOutput(f func()) string {
 	os.Stdout = originalOutput
 
 	return string(capturedOutput)
+}
+func TestParkingService_FindCarsParkedLast30Mins(t *testing.T) {
+	rows := 6
+	columns := 6
+
+	// Create parking lots
+	parkingLots := make([]*ParkingLot, 1)
+	parkingSpotLists := make([][][]ParkingSpot, 1)
+
+	for i := range parkingLots {
+		parkingLots[i] = NewParkingLot(i+1, rows, columns)
+		parkingSpotLists[i] = make([][]ParkingSpot, rows)
+
+		for j := range parkingSpotLists[i] {
+			parkingSpotLists[i][j] = make([]ParkingSpot, columns)
+		}
+	}
+
+	// Create parking attendant
+	attendant := NewParkingAttendant()
+
+	// Create parking service
+	parkingService := NewParkingService(parkingLots, attendant, securityStaffInstance)
+
+	// Park a car
+	car1 := Vehicle{
+		LicensePlate: "ABC123",
+		Color:        "Red",
+		Model:        "Sedan",
+	}
+	_, err := attendant.AssignSpot(parkingLots, parkingSpotLists, &car1)
+	if err != nil {
+		t.Fatalf("Error parking car: %v", err)
+	}
+
+	// Park another car after 15 minutes
+	time.Sleep(15 * time.Minute)
+	car2 := Vehicle{
+		LicensePlate: "XYZ789",
+		Color:        "Blue",
+		Model:        "SUV",
+	}
+	_, err = attendant.AssignSpot(parkingLots, parkingSpotLists, &car2)
+	if err != nil {
+		t.Fatalf("Error parking car: %v", err)
+	}
+
+	// Park another car after 45 minutes
+	time.Sleep(30 * time.Minute)
+	car3 := Vehicle{
+		LicensePlate: "DEF456",
+		Color:        "Green",
+		Model:        "Compact",
+	}
+	_, err = attendant.AssignSpot(parkingLots, parkingSpotLists, &car3)
+	if err != nil {
+		t.Fatalf("Error parking car: %v", err)
+	}
+
+	// Find cars parked in the last 30 minutes
+	recentCars := parkingService.FindCarsParkedLast30Mins()
+
+	// Check if the correct number of cars is found
+	if len(recentCars) != 2 {
+		t.Errorf("Expected 2 cars parked in the last 30 minutes, got %d", len(recentCars))
+	}
+
+	// Check if the correct cars are found
+	expectedLicensePlates := []string{"XYZ789", "DEF456"}
+	for _, expectedLicensePlate := range expectedLicensePlates {
+		found := false
+		for _, car := range recentCars {
+			if car.LicensePlate == expectedLicensePlate {
+				found = true
+				break
+			}
+		}
+		if !found {
+			t.Errorf("Expected to find car with license plate %s in recent cars, but it was not found", expectedLicensePlate)
+		}
+	}
 }

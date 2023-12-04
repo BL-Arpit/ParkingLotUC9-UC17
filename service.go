@@ -170,3 +170,19 @@ func (s *ParkingService) FindByBrand(brand string) ([]Vehicle, error) {
 
 	return foundVehicles, nil
 }
+
+func (s *ParkingService) FindCarsParkedLast30Mins() []Vehicle {
+	var recentCars []Vehicle
+	currentTime := time.Now()
+
+	for _, parkingLot := range s.parkingLots {
+		for _, vehicle := range parkingLot.ParkedVehicles {
+			elapsedTime := currentTime.Sub(vehicle.ParkingTime)
+			if elapsedTime <= 30*time.Minute {
+				recentCars = append(recentCars, vehicle)
+			}
+		}
+	}
+
+	return recentCars
+}
