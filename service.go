@@ -127,3 +127,17 @@ func (s *ParkingService) FindByLicensePlate(licensePlate string) (string, error)
 	}
 	return "", fmt.Errorf("vehicle with license plate %s not found", licensePlate)
 }
+
+func (s *ParkingService) FindAllWhiteCars() []Vehicle {
+	whiteCars := make([]Vehicle, 0)
+
+	for _, parkingLot := range s.parkingLots {
+		for _, vehicle := range parkingLot.ParkedVehicles {
+			if vehicle.Color == "White" {
+				whiteCars = append(whiteCars, vehicle)
+			}
+		}
+	}
+
+	return whiteCars
+}

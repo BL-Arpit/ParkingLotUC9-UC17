@@ -2,14 +2,10 @@ package main
 
 import (
 	"fmt"
-	"math/rand"
 	"os"
-	"time"
 )
 
 func main() {
-	rand.Seed(time.Now().UnixNano()) // Seed for random number generation
-
 	rows := 6
 	columns := 6
 
@@ -23,7 +19,7 @@ func main() {
 	attendant := NewParkingAttendant()
 	securityStaff := &SecurityStaff{}
 	parkingService := NewParkingService(parkingLots, attendant, securityStaff)
-
+	policeDepartment := NewPoliceDepartment(parkingService)
 	parkingSpotLists := make([][][]ParkingSpot, len(parkingLots))
 
 	for i := range parkingSpotLists {
@@ -33,12 +29,29 @@ func main() {
 		}
 	}
 
+	var userType string
+	fmt.Print("Are you a 'driver' or 'police'? ")
+	fmt.Scan(&userType)
+
+	switch userType {
+	case "driver":
+		driverMenu(parkingService, parkingSpotLists)
+	case "police":
+		policeMenu(policeDepartment)
+	default:
+		fmt.Println("Invalid user type. Exiting.")
+		os.Exit(1)
+	}
+}
+
+// driverMenu represents the menu for the driver.
+func driverMenu(parkingService *ParkingService, parkingSpotLists [][][]ParkingSpot) {
 	for {
 		fmt.Println("1. Park a vehicle")
 		fmt.Println("2. Unpark a vehicle")
 		fmt.Println("3. Check parking lot status")
-		fmt.Println("4. Exit")
-		fmt.Println("5. Find by License Plate")
+		fmt.Println("4. Find vehicle by License Plate")
+		fmt.Println("5. Exit")
 
 		var choice int
 		fmt.Print("Enter your choice: ")
@@ -53,8 +66,11 @@ func main() {
 			fmt.Scan(&vehicle.Color)
 			fmt.Print("Enter Model: ")
 			fmt.Scan(&vehicle.Model)
-			fmt.Print("Is the driver handicapped? (true/false): ")
-			fmt.Scan(&vehicle.Handicapped)
+
+			var isHandicapped string
+			fmt.Print("Is the driver handicapped? (yes/no): ")
+			fmt.Scan(&isHandicapped)
+			vehicle.Handicapped = isHandicapped == "yes" || isHandicapped == "y"
 
 			err := parkingService.Park(vehicle, parkingSpotLists)
 			if err != nil {
@@ -79,20 +95,44 @@ func main() {
 			parkingService.Status()
 
 		case 4:
-			os.Exit(0)
+			var licensePlate string
+			fmt.Print("Enter License Plate of the vehicle to find: ")
+			fmt.Scan(&licensePlate)
 
-		case 5:
-			var licensePlateToFind string
-			fmt.Print("Enter License Plate to find the parked car: ")
-			fmt.Scan(&licensePlateToFind)
-
-			result, err := parkingService.FindByLicensePlate(licensePlateToFind)
+			result, err := parkingService.FindByLicensePlate(licensePlate)
 			if err != nil {
 				fmt.Println("Error:", err)
 			} else {
 				fmt.Println(result)
 			}
 
+		case 5:
+			os.Exit(0)
+
+		default:
+			fmt.Println("Invalid choice. Please try again.")
+		}
+	}
+}
+
+// policeMenu represents the menu for the police.
+func policeMenu(policeDepartment *PoliceDepartment) {
+	for {
+		fmt.Println("1. Display Parking Lot Status")
+		fmt.Println("2. Find and Display White Cars")
+		fmt.Println("3. Exit")
+
+		var choice int
+		fmt.Print("Enter your choice: ")
+		fmt.Scan(&choice)
+
+		switch choice {
+		case 1:
+			policeDepartment.DisplayParkingLotStatus()
+		case 2:
+			policeDepartment.FindAndDisplayWhiteCars()
+		case 3:
+			os.Exit(0)
 		default:
 			fmt.Println("Invalid choice. Please try again.")
 		}

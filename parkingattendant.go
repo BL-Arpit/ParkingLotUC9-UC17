@@ -88,29 +88,6 @@ func (pa *ParkingAttendant) assignHandicappedSpot(parkingLots []*ParkingLot, par
 	return "", fmt.Errorf("handicapped parking is full")
 }
 
-func findNearestParkingLot(parkingLots []*ParkingLot) int {
-	// Implement the logic to find the nearest parking lot (e.g., based on distance or any other criteria)
-	// For simplicity, let's assume the first parking lot is the nearest in this example
-	return 0
-}
-
-// Helper function to assign a spot in a specific parking lot
-func assignSpotInLot(lotIndex int, parkingSpotLists [][][]ParkingSpot, vehicle *Vehicle) (string, error) {
-	// Iterate over parking spots in the chosen parking lot
-	for i := 0; i < len(parkingSpotLists[0]); i++ {
-		// Find the next available spot in the current parking lot
-		if !parkingSpotLists[lotIndex][i][0].Occupied {
-			// Convert row and column indices to parking spot identifier (e.g., a1, b2, etc.)
-			parkingSpot := string(rune('a'+i)) + fmt.Sprintf("%d", lotIndex+1)
-			parkingSpotLists[lotIndex][i][0].Occupied = true
-			vehicle.ParkingSpot = parkingSpot
-			return parkingSpot, nil
-		}
-	}
-
-	return "", fmt.Errorf("parking lot %d is full", lotIndex+1)
-}
-
 // getRandomAvailableSpot returns an available parking spot randomly in the given parking lot.
 func getRandomAvailableSpot(lotID int, parkingSpotLists [][][]ParkingSpot, rows, columns int) (string, error) {
 	// Create a list of all possible parking spots
