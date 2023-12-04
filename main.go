@@ -120,6 +120,8 @@ func policeMenu(policeDepartment *PoliceDepartment) {
 	for {
 		fmt.Println("1. Display Parking Lot Status")
 		fmt.Println("2. Find and Display White Cars")
+		fmt.Println("3. Find and Display by color and model")
+
 		fmt.Println("3. Exit")
 
 		var choice int
@@ -131,6 +133,8 @@ func policeMenu(policeDepartment *PoliceDepartment) {
 			policeDepartment.DisplayParkingLotStatus()
 		case 2:
 			policeDepartment.FindAndDisplayWhiteCars()
+		case 4:
+			policeDepartment.SearchByColorAndModel()
 		case 3:
 			os.Exit(0)
 		default:

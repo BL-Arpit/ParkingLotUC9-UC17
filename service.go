@@ -141,3 +141,15 @@ func (s *ParkingService) FindAllWhiteCars() []Vehicle {
 
 	return whiteCars
 }
+
+func (s *ParkingService) FindByColorAndModel(color, model string) (string, error) {
+	for _, parkingLot := range s.parkingLots {
+		for _, vehicle := range parkingLot.ParkedVehicles {
+			if vehicle.Color == color && vehicle.Model == model {
+				return fmt.Sprintf("Vehicle with Color %s and Model %s is parked at spot %s in Parking Lot %d",
+					color, model, vehicle.ParkingSpot, parkingLot.ID), nil
+			}
+		}
+	}
+	return "", fmt.Errorf("vehicle with color %s and model %s not found", color, model)
+}

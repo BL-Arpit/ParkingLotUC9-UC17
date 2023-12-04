@@ -35,3 +35,19 @@ func (pd *PoliceDepartment) FindAndDisplayWhiteCars() {
 		}
 	}
 }
+
+func (pd *PoliceDepartment) SearchByColorAndModel() {
+	var color, model string
+
+	fmt.Print("Enter Color: ")
+	fmt.Scan(&color)
+	fmt.Print("Enter Model: ")
+	fmt.Scan(&model)
+
+	result, err := pd.parkingService.FindByColorAndModel(color, model)
+	if err != nil {
+		fmt.Println("Error:", err)
+	} else {
+		fmt.Println(result)
+	}
+}
