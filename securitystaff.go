@@ -14,3 +14,6 @@ var securityStaffInstance = &SecurityStaff{} // Global instance of SecurityStaff
 func (s *SecurityStaff) Notify() {
 	fmt.Println("Security staff notified: Parking lot is full. Additional security measures activated.")
 }
+func (s *SecurityStaff) NotifyHighSecurity() {
+	fmt.Println("Security staff notified: High-security measures activated.")
+}

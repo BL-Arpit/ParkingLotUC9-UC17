@@ -45,8 +45,8 @@ func (p *ParkingLot) Status() {
 		fmt.Println("No vehicles parked.")
 	} else {
 		for _, vehicle := range p.ParkedVehicles {
-			fmt.Printf("License Plate: %s, Color: %s, Model: %s, Parking Spot: %s\n",
-				vehicle.LicensePlate, vehicle.Color, vehicle.Model, vehicle.ParkingSpot)
+			fmt.Printf("- License Plate: %s, Color: %s, Model: %s, Brand: %s, Parking Spot: %s\n",
+				vehicle.LicensePlate, vehicle.Color, vehicle.Model, vehicle.Brand, vehicle.ParkingSpot)
 		}
 	}
 }

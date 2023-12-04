@@ -66,6 +66,8 @@ func driverMenu(parkingService *ParkingService, parkingSpotLists [][][]ParkingSp
 			fmt.Scan(&vehicle.Color)
 			fmt.Print("Enter Model: ")
 			fmt.Scan(&vehicle.Model)
+			fmt.Print("Enter Brand: ")
+			fmt.Scan(&vehicle.Brand)
 
 			var isHandicapped string
 			fmt.Print("Is the driver handicapped? (yes/no): ")
@@ -122,7 +124,7 @@ func policeMenu(policeDepartment *PoliceDepartment) {
 		fmt.Println("2. Find and Display White Cars")
 		fmt.Println("3. Find and Display by color and model")
 
-		fmt.Println("3. Exit")
+		fmt.Println("4. Exit")
 
 		var choice int
 		fmt.Print("Enter your choice: ")
@@ -133,9 +135,11 @@ func policeMenu(policeDepartment *PoliceDepartment) {
 			policeDepartment.DisplayParkingLotStatus()
 		case 2:
 			policeDepartment.FindAndDisplayWhiteCars()
-		case 4:
-			policeDepartment.SearchByColorAndModel()
 		case 3:
+			policeDepartment.SearchByColorAndModel()
+		case 4:
+			policeDepartment.CheckForBMW()
+		case 5:
 			os.Exit(0)
 		default:
 			fmt.Println("Invalid choice. Please try again.")

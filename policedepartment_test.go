@@ -1,6 +1,9 @@
 package main
 
 import (
+	"github.com/stretchr/testify/assert"
+	"io"
+	"os"
 	"testing"
 )
 
@@ -95,4 +98,60 @@ func TestParkingService_FindByColorAndModel(t *testing.T) {
 	if err == nil {
 		t.Errorf("Expected error for nonexistent vehicle, but got nil")
 	}
+}
+
+func TestPoliceDepartment_CheckForBMW(t *testing.T) {
+	// Create parking lots, attendant, and police department
+	rows := 6
+	columns := 6
+	parkingLots := make([]*ParkingLot, 4)
+	parkingSpotLists := make([][][]ParkingSpot, 4)
+
+	for i := range parkingLots {
+		parkingLots[i] = NewParkingLot(i+1, rows, columns)
+		parkingSpotLists[i] = make([][]ParkingSpot, rows)
+		for j := range parkingSpotLists[i] {
+			parkingSpotLists[i][j] = make([]ParkingSpot, columns)
+		}
+	}
+
+	attendant := NewParkingAttendant()
+	securityStaff := &SecurityStaff{}
+	parkingService := NewParkingService(parkingLots, attendant, securityStaff)
+	policeDepartment := NewPoliceDepartment(parkingService)
+
+	// Create a BMW car
+	bmwCar := Vehicle{
+		LicensePlate: "XYZ456",
+		Color:        "Black",
+		Model:        "Sedan",
+		Brand:        "BMW",
+	}
+
+	// Assign a parking spot for the BMW car
+	_, err := attendant.AssignSpot(parkingLots, parkingSpotLists, &bmwCar)
+	assert.NoError(t, err, "Error assigning parking spot for BMW car")
+
+	// Capture standard output and check printed messages
+	expectedOutput := "\nBMW Cars found. Security tightened.\n"
+	actualOutput := captureOutput(func() {
+		policeDepartment.CheckForBMW()
+	})
+
+	// Check if the expected output matches the actual output
+	assert.Equal(t, expectedOutput, actualOutput, "Output mismatch")
+
+}
+func captureOutput(f func()) string {
+	originalOutput := os.Stdout
+	r, w, _ := os.Pipe()
+	os.Stdout = w
+
+	f()
+
+	w.Close()
+	capturedOutput, _ := io.ReadAll(r)
+	os.Stdout = originalOutput
+
+	return string(capturedOutput)
 }

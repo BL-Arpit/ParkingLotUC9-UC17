@@ -153,3 +153,20 @@ func (s *ParkingService) FindByColorAndModel(color, model string) (string, error
 	}
 	return "", fmt.Errorf("vehicle with color %s and model %s not found", color, model)
 }
+func (s *ParkingService) FindByBrand(brand string) ([]Vehicle, error) {
+	foundVehicles := make([]Vehicle, 0)
+
+	for _, parkingLot := range s.parkingLots {
+		for _, vehicle := range parkingLot.ParkedVehicles {
+			if vehicle.Brand == brand {
+				foundVehicles = append(foundVehicles, vehicle)
+			}
+		}
+	}
+
+	if len(foundVehicles) == 0 {
+		return nil, fmt.Errorf("no vehicles found with brand: %s", brand)
+	}
+
+	return foundVehicles, nil
+}

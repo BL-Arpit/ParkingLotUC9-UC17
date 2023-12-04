@@ -51,3 +51,19 @@ func (pd *PoliceDepartment) SearchByColorAndModel() {
 		fmt.Println(result)
 	}
 }
+
+// CheckForBMW checks if there are any BMW brand cars parked and tightens security if found.
+func (pd *PoliceDepartment) CheckForBMW() {
+	bmwCars, err := pd.parkingService.FindByBrand("BMW")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	if len(bmwCars) > 0 {
+		pd.parkingService.securityStaff.NotifyHighSecurity()
+		fmt.Println("\nBMW Cars found. Security tightened.")
+	} else {
+		fmt.Println("\nNo BMW Cars found. No change in security.")
+	}
+}
