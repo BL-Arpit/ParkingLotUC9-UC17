@@ -186,3 +186,25 @@ func (s *ParkingService) FindCarsParkedLast30Mins() []Vehicle {
 
 	return recentCars
 }
+
+func (s *ParkingService) FindHandicappedVehiclesAtRowsBAndD() []Vehicle {
+	handicappedVehicles := make([]Vehicle, 0)
+
+	for _, parkingLot := range s.parkingLots {
+		for row := 1; row <= parkingLot.Rows; row++ {
+			if row == 2 || row == 4 { // Rows B and D
+				for col := 1; col <= parkingLot.Columns; col++ {
+					// Iterate over all vehicles in the parking lot
+					for _, vehicle := range parkingLot.ParkedVehicles {
+						// Check if the vehicle is in the specified row, col, and handicapped
+						if vehicle.Handicapped && string(rune('A'+row-1)) == string(vehicle.ParkingSpot[0]) && col == int(vehicle.ParkingSpot[1]-'0') {
+							handicappedVehicles = append(handicappedVehicles, vehicle)
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return handicappedVehicles
+}

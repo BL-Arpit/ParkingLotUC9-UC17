@@ -81,3 +81,32 @@ func (pd *PoliceDepartment) DisplayRecentCars() {
 		fmt.Println("No cars found that were parked in the last 30 minutes.")
 	}
 }
+func (pd *PoliceDepartment) CheckIfNumberInHandicappedVehicles(userProvidedNumber string) bool {
+	handicappedVehicles := pd.parkingService.FindHandicappedVehiclesAtRowsBAndD()
+
+	for _, vehicle := range handicappedVehicles {
+		// Extract the number from the license plate (assuming it's a single-digit number)
+		vehicleNumber := string(vehicle.LicensePlate[len(vehicle.LicensePlate)-1])
+
+		if vehicleNumber == userProvidedNumber {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (pd *PoliceDepartment) CheckHandicapped() {
+	handicappedVehicles := pd.parkingService.FindHandicappedVehiclesAtRowsBAndD()
+
+	if len(handicappedVehicles) == 0 {
+		fmt.Println("No handicapped vehicles found in Rows B and D.")
+		return
+	}
+
+	fmt.Println("Handicapped vehicles found in Rows B and D:")
+	for _, vehicle := range handicappedVehicles {
+		fmt.Printf("License Plate: %s, Color: %s, Model: %s, Parking Spot: %s\n",
+			vehicle.LicensePlate, vehicle.Color, vehicle.Model, vehicle.ParkingSpot)
+	}
+}

@@ -123,7 +123,9 @@ func policeMenu(policeDepartment *PoliceDepartment) {
 		fmt.Println("1. Display Parking Lot Status")
 		fmt.Println("2. Find and Display White Cars")
 		fmt.Println("3. Find and Display by color and model")
-
+		fmt.Println("4. Search BMW")
+		fmt.Println("5. Find Cars Parked in 30 mins")
+		fmt.Println("6. Check Handicap Fraud")
 		fmt.Println("4. Exit")
 
 		var choice int
@@ -139,8 +141,14 @@ func policeMenu(policeDepartment *PoliceDepartment) {
 			policeDepartment.SearchByColorAndModel()
 		case 4:
 			policeDepartment.CheckForBMW()
+
 		case 5:
+			policeDepartment.DisplayRecentCars()
+		case 6:
+			policeDepartment.CheckHandicapped()
+		case 7:
 			os.Exit(0)
+
 		default:
 			fmt.Println("Invalid choice. Please try again.")
 		}
