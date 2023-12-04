@@ -193,3 +193,17 @@ func TestAssignSpotForSUV(t *testing.T) {
 		parkingService.Status()
 	}
 }
+func (pd *PoliceDepartment) DisplayAllParkedVehicles() {
+	fmt.Println("Parked Vehicles:")
+
+	for _, lot := range pd.parkingService.parkingLots {
+		for _, vehicle := range lot.ParkedVehicles {
+			fmt.Printf("License Plate: %s, Color: %s, Model: %s, Brand: %s, Parking Spot: %s\n",
+				vehicle.LicensePlate, vehicle.Color, vehicle.Model, vehicle.Brand, vehicle.ParkingSpot)
+		}
+	}
+
+	if len(pd.parkingService.parkingLots) == 0 {
+		fmt.Println("No vehicles are currently parked.")
+	}
+}

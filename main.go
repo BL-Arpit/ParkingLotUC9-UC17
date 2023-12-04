@@ -126,7 +126,8 @@ func policeMenu(policeDepartment *PoliceDepartment) {
 		fmt.Println("4. Search BMW")
 		fmt.Println("5. Find Cars Parked in 30 mins")
 		fmt.Println("6. Check Handicap Fraud")
-		fmt.Println("4. Exit")
+		fmt.Println("7. Display all parked vehicles")
+		fmt.Println("8. Exit")
 
 		var choice int
 		fmt.Print("Enter your choice: ")
@@ -147,6 +148,8 @@ func policeMenu(policeDepartment *PoliceDepartment) {
 		case 6:
 			policeDepartment.CheckHandicapped()
 		case 7:
+			policeDepartment.DisplayParkingLotStatus()
+		case 8:
 			os.Exit(0)
 
 		default:
